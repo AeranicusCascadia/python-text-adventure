@@ -49,8 +49,9 @@ class Room:
 class Player:
     def __init__(self):
         self.location = None
-		
-    def move(self): # Outer method
+	
+    # Player movement method	
+    def move(self, move_command): # Outer method
 	
         def execute_move(self, destination): # Inner method
             if destination in self.location.exits and self.location.exits[move_command] != None:
@@ -60,13 +61,22 @@ class Player:
                 print('That does not seem to be a viable exit from here.')
 				
         print('')
-        move_command = input('which direction? ')
-        move_command = move_command.lower()
-		
+        
         if len(move_command) < 2 and move_command in move_alias_dict:
             move_command = move_alias_dict[move_command]
 			
         execute_move(self, move_command)
+		
+    # General command input method 
+    def get_command(self):
+	    print('')
+	    command = input('What is your command? ')
+	    command = command.lower()
+	    if command in list_move_commands or command in move_alias_dict:
+		    self.move(command)
+	    else:
+		    print('That looks like a commmand other than movement.')
+		
 		
 # Instatiate rooms		
 town_square = Room('Town Square')
@@ -98,7 +108,7 @@ player.location = town_square
 # Game loop
 while (game.running == True):
     player.location.describe()
-    player.move()
+    player.get_command()
  
 
 

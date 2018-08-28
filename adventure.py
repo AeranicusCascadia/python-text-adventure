@@ -27,6 +27,8 @@ class Room:
 			'east' : None,
 			'west' : None
 		}
+		self.items = []
+	
 		
 	def describe(self):
 		print('')
@@ -78,15 +80,39 @@ class Player:
 		else:
 			print('')
 			print('That looks like a commmand other than movement.')
+			
 class Object:
 	def __init__(self, name):
 		self.name = name
 		self.description = None
 		self.takeable = False
+		self.items = []
+	
+	def describe(self):
+		for line in textwrap.wrap(self.description, 80):
+			print(line)
+
+class Readable(Object):
+	def __init__(self, name):
+		self.text = None
+	
+	def show_text(self):
+		for line in textwrap.wrap(self.text, 80):
+			print(line)
 			
-		
+# Instantiate and build objects
+sign = Readable('sign')
+sign.description = "A rustic wooden road sign."
+sign.text = "Welcome to Greenwood."
+sign.actions = {
+	'examine' : sign.describe,
+	'read' : sign.show_text
+}
+				
 # Instatiate rooms		
 town_square = Room('Town Square')
+town_square.inventory = [sign]
+
 general_store = Room('General Store')
 
 # Declare room properties
@@ -105,21 +131,19 @@ general_store.exits = {
 			'east' : None,
 			'west' : None
 		}
-# Instantiate objects
 			
-	
 # Instantiate game and player
 game = Game()
 player = Player()
 player.location = town_square
 
+"""
 # Game loop
 while (game.running == True):
 	player.location.describe()
 	player.location.show_exits()
 	player.get_command()
-
-
+"""
 
 
 

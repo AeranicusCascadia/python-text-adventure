@@ -39,6 +39,13 @@ class Room:
 		for line in textwrap.wrap(self.description, 80):
 			print(line)
 		
+	def show_items(self):
+		print('')
+		print('At this location you notice:')
+		print('----------------------------')
+		for item in self.items:
+			print(item.name)
+		
 	def show_exits(self):
 		print('')	
 		print('Exits from here:')
@@ -78,22 +85,27 @@ class Player:
 		if command in list_move_commands or command in move_alias_dict:
 			self.move(command)
 		else:
-			print('')
-			print('That looks like a commmand other than movement.')
+			try:
+				(verb, target) = command.split(" ")
+				print(verb)
+				print(target)
+			except:
+				print('')
+				print("I'm afraid that I don't understand that command.")
 			
 class Object:
 	def __init__(self, name):
 		self.name = name
 		self.description = None
 		self.takeable = False
-		self.items = []
-	
+		
 	def describe(self):
 		for line in textwrap.wrap(self.description, 80):
 			print(line)
 
 class Readable(Object):
 	def __init__(self, name):
+		self.name = name
 		self.text = None
 	
 	def show_text(self):
@@ -108,10 +120,13 @@ sign.actions = {
 	'examine' : sign.describe,
 	'read' : sign.show_text
 }
+
+big_rock = Object('big rock')
+statue = Object('statue')
 				
 # Instatiate rooms		
 town_square = Room('Town Square')
-town_square.inventory = [sign]
+town_square.items = [sign, big_rock, statue]
 
 general_store = Room('General Store')
 
@@ -137,13 +152,14 @@ game = Game()
 player = Player()
 player.location = town_square
 
-"""
+
 # Game loop
 while (game.running == True):
 	player.location.describe()
+	player.location.show_items()
 	player.location.show_exits()
 	player.get_command()
-"""
+
 
 
 

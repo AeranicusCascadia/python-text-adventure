@@ -1,6 +1,6 @@
 import textwrap
 
-# command lists and aliases
+# Move list and alias dictionary
 list_move_commands = ['north', 'south', 'east', 'west']
 move_alias_dict = {
 	'n' : 'north',
@@ -8,14 +8,55 @@ move_alias_dict = {
 	'e' : 'east',
 	'w' : 'west',
 	'u' : 'up',
-	'd' : 'down'
+	'd' : 'down',
+	'go north' : 'north',
+	'go south' : 'south',
+	'go east' : 'east',
+	'go west' : 'west',
+	'go up' : 'up',
+	'go down' : 'down',
+	
+	'go n' : 'north',
+	'go s' : 'south',
+	'go e' : 'east',
+	'go w' : 'west',
+	'go u' : 'up',
+	'go d' : 'down'
 }
 
 # Classes
-
 class Game:
 	def __init__(self):
 		self.running = True
+		
+	def quit(self):
+		print('')
+		print('Thanks for playing!')
+		print('')
+		input('Press "Enter" to quit.')
+		quit()
+		
+	def show_commands(self):
+		print('')
+		print('Simple Commands:')
+		print('----------------')
+		print('<commands> : Show this list of game commands.')
+		print('<quit> : Exits the game')
+		print('<look> : Take a detailed look around the area.')
+		print('')
+		print('<north>, <south>, <east>, <west>, <up>, <down> : Move in this direction.')
+		print('Can abbreviate <n>, <s>, <e>, <w>, <u>, <d>')
+		print('')
+		print('Extended Commands:')
+		print('------------------')
+		print('To interact with an object or creature, use two-word command.')
+		print('[verb] + [single space] + [object]')
+		print('')
+		print('Examples:')
+		print('"read sign"')
+		print('"eat apple"')
+		print('"move chair"')
+		print('"attack clown"')
 		
 class Room:
 	def __init__(self, name):
@@ -29,7 +70,6 @@ class Room:
 		}
 		self.items = []
 	
-		
 	def describe(self):
 		print('')
 		print('=' * len(self.name))
@@ -56,6 +96,11 @@ class Room:
 			else:
 				print(k + ':', v.name)
 				
+	def big_look(self):
+		self.describe()
+		self.show_items()
+		self.show_exits()
+						
 class Player:
 	def __init__(self):
 		self.location = None
@@ -72,18 +117,23 @@ class Player:
 				
 		print('')
 
-		if len(move_command) < 2 and move_command in move_alias_dict:
+		if move_command in move_alias_dict:
 			move_command = move_alias_dict[move_command]
 			
 		execute_move(self, move_command)
+		
+		player.location.describe()
 	
 	# General command input method 
 	def get_command(self):
 		print('')
-		command = input('What is your command? ')
+		command = input('-- > What is your command? --> ')
 		command = command.lower()
 		if command in list_move_commands or command in move_alias_dict:
 			self.move(command)
+		elif command in universal_commands_dict:
+			print('That appears to be a universal command!')
+			universal_commands_dict[command]()
 		else:
 			try:
 				(verb, target) = command.split(" ")
@@ -111,7 +161,10 @@ class Readable(Object):
 	def show_text(self):
 		for line in textwrap.wrap(self.text, 80):
 			print(line)
-			
+# Instantiate game and player
+game = Game()
+player = Player()
+		
 # Instantiate and build objects
 sign = Readable('sign')
 sign.description = "A rustic wooden road sign."
@@ -130,6 +183,9 @@ town_square.items = [sign, big_rock, statue]
 
 general_store = Room('General Store')
 
+# set player starting location
+player.location = town_square
+
 # Declare room properties
 town_square.description = "The central town square has a smattering of people going about their daily business."
 town_square.exits = {
@@ -146,19 +202,21 @@ general_store.exits = {
 			'east' : None,
 			'west' : None
 		}
-			
-# Instantiate game and player
-game = Game()
-player = Player()
-player.location = town_square
 
+# Universal Commands Dictionary
+universal_commands_dict = {
+	"look" : player.location.big_look,
+	"quit" : game.quit,
+	"commands" : game.show_commands
+}
+		
+# Starting code outside game loop for now
+player.location.big_look()
 
 # Game loop
 while (game.running == True):
-	player.location.describe()
-	player.location.show_items()
-	player.location.show_exits()
 	player.get_command()
+
 
 
 

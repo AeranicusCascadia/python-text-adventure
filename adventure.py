@@ -68,7 +68,7 @@ class Room:
 			'east' : None,
 			'west' : None
 		}
-		self.items = []
+		self.items = {}
 	
 	def describe(self):
 		print('')
@@ -83,8 +83,8 @@ class Room:
 		print('')
 		print('At this location you notice:')
 		print('----------------------------')
-		for item in self.items:
-			print(item.name)
+		for k, v in self.items.items():
+			print(k)
 		
 	def show_exits(self):
 		print('')	
@@ -104,7 +104,7 @@ class Room:
 class Player:
 	def __init__(self):
 		self.location = None
-		self.inventory = []
+		self.inventory = {}
 
 	# Player movement method	
 	def move(self, move_command): # Outer method
@@ -137,49 +137,53 @@ class Player:
 		else:
 			try:
 				(verb, target) = command.split(" ")
-				print(verb)
-				print(target)
+				# access location items dict, that items actions dict, and call it.
+				player.location.items[target].actions[verb]()  
+				
 			except:
 				print('')
 				print("I'm afraid that I don't understand that command.")
 			
-class Object:
+class GameObject:
 	def __init__(self, name):
 		self.name = name
 		self.description = None
 		self.takeable = False
+		self.text =  None
 		
 	def describe(self):
 		for line in textwrap.wrap(self.description, 80):
 			print(line)
-
-class Readable(Object):
-	def __init__(self, name):
-		self.name = name
-		self.text = None
-	
+			
 	def show_text(self):
-		for line in textwrap.wrap(self.text, 80):
-			print(line)
+		print(self.text)
+
+	
+	
 # Instantiate game and player
 game = Game()
 player = Player()
 		
 # Instantiate and build objects
-sign = Readable('sign')
+sign = GameObject('sign')
 sign.description = "A rustic wooden road sign."
 sign.text = "Welcome to Greenwood."
 sign.actions = {
-	'examine' : sign.describe,
-	'read' : sign.show_text
-}
+		'examine' : sign.describe,
+		'look' : sign.describe,
+		'read' : sign.show_text
+		}
 
-big_rock = Object('big rock')
-statue = Object('statue')
+big_rock = GameObject('big rock')
+statue = GameObject('statue')
 				
 # Instatiate rooms		
 town_square = Room('Town Square')
-town_square.items = [sign, big_rock, statue]
+town_square.items = {
+	'sign' : sign,
+	'rock' : big_rock,
+	'statue' : statue
+}
 
 general_store = Room('General Store')
 

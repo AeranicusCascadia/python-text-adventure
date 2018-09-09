@@ -24,6 +24,7 @@ move_alias_dict = {
 	'go d' : 'down'
 }
 
+
 # Classes
 class Game:
 	def __init__(self):
@@ -126,6 +127,21 @@ class Player:
 	
 	# General command input method 
 	def get_command(self):
+		
+		# local function to parse and call two-word player command
+		def do_command(self):
+			command_string = command.split(" ")
+			print(command_string[0], command_string[-1])
+			
+			try:
+				(verb, target) = (command_string[0], command_string[-1])
+				# access location items dict, that items actions dict, and call it.
+				player.location.items[target].actions[verb]()  
+			except:
+				print('')
+				print("I'm afraid that I don't understand that command.")
+		
+		# Get player input and check vs multiple command and command alias dicts
 		print('')
 		command = input('-- > What is your command? --> ')
 		command = command.lower()
@@ -135,14 +151,7 @@ class Player:
 			print('That appears to be a universal command!')
 			universal_commands_dict[command]()
 		else:
-			try:
-				(verb, target) = command.split(" ")
-				# access location items dict, that items actions dict, and call it.
-				player.location.items[target].actions[verb]()  
-				
-			except:
-				print('')
-				print("I'm afraid that I don't understand that command.")
+			do_command(self)
 			
 class GameObject:
 	def __init__(self, name):
@@ -156,6 +165,7 @@ class GameObject:
 			print(line)
 			
 	def show_text(self):
+		print('')
 		print(self.text)
 
 	
@@ -170,6 +180,7 @@ sign.description = "A rustic wooden road sign."
 sign.text = "Welcome to Greenwood."
 sign.actions = {
 		'examine' : sign.describe,
+		'look' : sign.describe,
 		'look' : sign.describe,
 		'read' : sign.show_text
 		}
